@@ -25,20 +25,25 @@ from random import uniform
 beta = 1
 c = 1 # eV
 z = -1 ### charge of the particle
-x_X_0 = uniform(1e-3,1) ### radiation length gcm^-2
+x_X_0 = 1.1/3.54 ##uniform(1e-3,1) ### radiation length gcm^-2
+x_0 = 3.54 
 p_initial = 100e9 # in eV
 Theta_0 = (13.6e6)/(beta*c*p_initial) *z*np.sqrt(x_X_0) * ( 1 + 0.038*math.log(x_X_0) )
-results = np.ones((1000,1000))
+results = np.zeroes((1000,1000))
 
 
 #%% Monte Carlo 
 temp = Theta_0
 
 for ii in range(0,len(results)):
-    for jj in range(0,len(results)):
-        results[ii][jj] = temp;
-        temp = gauss(0, temp);
-    temp = Theta_0
+    for jj in range(1,len(results)):
+        #draw a scattering angle
+        scattering_theta = gauss(0, Theta_0)
+        delta_yP = tan(scattering_theta) * x_X_0 * x_0 # we approximated for small angles wrt z axis
+        results[ii][jj] =  results[ii][jj-1] + delta_yP
+        #results[ii][jj] = temp; #here we put the current place of the muon
+        #temp = gauss(0, temp);
+    #temp = Theta_0
 
 results_mean =np.zeros(1000)  
 for ii in range(0,len(results)):
